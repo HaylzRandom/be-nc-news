@@ -10,7 +10,7 @@ app.use(express.json());
 // /api
 app.get('/api', getEndpoints);
 
-// /api/articles/:article_id
+// /api/articles
 app.get('/api/articles/:article_id', getArticleById);
 
 // /api/topics
