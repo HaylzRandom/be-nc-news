@@ -74,19 +74,23 @@ describe('/api/articles/:article_id', () => {
     - respond with 400 when sending an invalid ID
   */
   test('GET:200 should return a single article object to client', () => {
+    const expectedObj = {
+      article_id: 1,
+      topic: 'mitch',
+      author: 'butter_bridge',
+      body: 'I find this existence challenging',
+      created_at: '2020-07-09T20:11:00.000Z',
+      votes: 100,
+      article_img_url:
+        'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
+    };
+
     return request(app)
       .get('/api/articles/1')
       .expect(200)
       .then((response) => {
         const { article } = response.body;
-        expect(article.article_id).toBe(1);
-        expect(typeof article.article_id).toBe('number');
-        expect(article.topic).toBe('mitch');
-        expect(typeof article.topic).toBe('string');
-        expect(article.author).toBe('butter_bridge');
-        expect(typeof article.author).toBe('string');
-        expect(article.votes).toBe(100);
-        expect(typeof article.votes).toBe('number');
+        expect(article).toMatchObject(expectedObj);
       });
   });
   test('GET:404 should return an appropriate status code and error message when given a valid but non-existant article ID', () => {
@@ -97,7 +101,7 @@ describe('/api/articles/:article_id', () => {
         expect(body.msg).toBe('Article does not exist');
       });
   });
-  test('GET:400 should return an appropriate status code and error message when given a valid but non-existant article ID', () => {
+  test('GET:400 should return an appropriate status code and error message when given an invalid ID that is not a number', () => {
     return request(app)
       .get('/api/articles/a')
       .expect(400)
