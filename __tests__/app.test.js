@@ -5,6 +5,8 @@ const db = require('../db/connection');
 const seed = require('../db/seeds/seed');
 const data = require('../db/data/test-data');
 
+const endpointData = require('../endpoints.json');
+
 beforeEach(() => seed(data));
 afterAll(() => db.end());
 
@@ -45,45 +47,13 @@ describe('/api', () => {
         - respond with 404 when path not found/misspelled
   */
   test('GET:200 should respond with an object describing all available endpoints', () => {
-    // TODO - Figure out a way to do this dynamically
-    const endpointsExpected = {
-      'GET /api': {
-        description:
-          'serves up a json representation of all the available endpoints of the api',
-      },
-      'GET /api/topics': {
-        description: 'serves an array of all topics',
-        queries: [],
-        exampleResponse: {
-          topics: [{ slug: 'football', description: 'Footie!' }],
-        },
-      },
-      'GET /api/articles': {
-        description: 'serves an array of all articles',
-        queries: ['author', 'topic', 'sort_by', 'order'],
-        exampleResponse: {
-          articles: [
-            {
-              title: 'Seafood substitutions are increasing',
-              topic: 'cooking',
-              author: 'weegembump',
-              body: 'Text from the article..',
-              created_at: '2018-05-30T15:59:13.341Z',
-              votes: 0,
-              comment_count: 6,
-            },
-          ],
-        },
-      },
-    };
-
     return request(app)
       .get('/api')
       .expect(200)
       .then((response) => {
         const endpoints = response.body;
 
-        expect(endpoints).toEqual(endpointsExpected);
+        expect(endpoints).toEqual(endpointData);
       });
   });
   test('GET:404 should respond with approriate error status code and error message when path does not exist', () => {
@@ -92,6 +62,51 @@ describe('/api', () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe('Path Not Found');
+      });
+  });
+});
+
+describe('/api/articles/:article_id', () => {
+  /* 
+    - GET
+    - respond with 200 status code
+    - respond with 404 when article with ID cannot be found
+    - respond with 400 when sending an invalid ID
+  */
+  test('GET:200 should return a single article object to client', () => {
+    const expectedObj = {
+      article_id: 1,
+      topic: 'mitch',
+      author: 'butter_bridge',
+      body: 'I find this existence challenging',
+      created_at: '2020-07-09T20:11:00.000Z',
+      votes: 100,
+      article_img_url:
+        'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
+    };
+
+    return request(app)
+      .get('/api/articles/1')
+      .expect(200)
+      .then((response) => {
+        const { article } = response.body;
+        expect(article).toMatchObject(expectedObj);
+      });
+  });
+  test('GET:404 should return an appropriate status code and error message when given a valid but non-existant article ID', () => {
+    return request(app)
+      .get('/api/articles/99999')
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Article does not exist');
+      });
+  });
+  test('GET:400 should return an appropriate status code and error message when given an invalid ID that is not a number', () => {
+    return request(app)
+      .get('/api/articles/a')
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad Request');
       });
   });
 });
