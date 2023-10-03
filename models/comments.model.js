@@ -1,4 +1,5 @@
 const db = require('../db/connection');
+const { checkExists } = require('../db/seeds/utils');
 
 exports.getAllCommentsForArticle = (article_id) => {
   const query = `
@@ -7,8 +8,15 @@ exports.getAllCommentsForArticle = (article_id) => {
     ORDER BY created_at DESC;`;
 
   return db.query(query, [article_id]).then(({ rows }) => {
-    return rows.length === 0
-      ? Promise.reject({ status: 404, msg: 'No comments found for article' })
-      : rows;
+    if (rows.length === 0) {
+      return checkExists('articles', 'article_id', article_id).then(() => {
+        return Promise.reject({
+          status: 404,
+          msg: 'No comments found for article',
+        });
+      });
+    } else {
+      return rows;
+    }
   });
 };

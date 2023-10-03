@@ -229,17 +229,12 @@ describe('/api/articles/:article_id/comments', () => {
       });
   });
 
-  /* NOTE - This has only passed 0.5% of the time as the promises resolve/reject with race conditions. I would have suggested having a message to the client indicating the article they search for doesn't exist but the comments promise seems to reolve/reject first sending a message indicating no comments exist for article (which is also technically true) 
-  
-  Spoke to Poonam about it but haven't received advice about it yet.
-  */
-
-  // test('GET:404 should respond with appropriate status code and error message when article with the ID supplied does not exist', () => {
-  //   return request(app)
-  //     .get('/api/articles/9999/comments')
-  //     .expect(404)
-  //     .then(({ body }) => {
-  //       expect(body.msg).toBe('Article does not exist');
-  //     });
-  // });
+  test('GET:404 should respond with appropriate status code and error message when article with the ID supplied does not exist', () => {
+    return request(app)
+      .get('/api/articles/9999/comments')
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Resource not found');
+      });
+  });
 });
