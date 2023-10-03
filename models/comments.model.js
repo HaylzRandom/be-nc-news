@@ -11,7 +11,7 @@ exports.getAllCommentsForArticle = (article_id) => {
     if (rows.length === 0) {
       return checkExists('articles', 'article_id', article_id).then(() => {
         return Promise.reject({
-          status: 404,
+          status: 200,
           msg: 'No comments found for article',
         });
       });

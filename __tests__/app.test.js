@@ -186,7 +186,7 @@ describe('/api/articles/:article_id/comments', () => {
   /* 
     - GET
     - respond with 200 status
-    - respond with 404 if article is found but no comments exist
+    - respond with 200 if article is found but no comments exist
     - respond with 404 when no article found with article_id
   */
   test('GET:200 should return an array of comments for a given article', () => {
@@ -197,15 +197,21 @@ describe('/api/articles/:article_id/comments', () => {
         const { comments } = response.body;
 
         expect(comments).toHaveLength(11);
-        expect(comments).toBeSortedBy;
-        comments.forEach((comment) => {
-          expect(typeof comment.comment_id).toBe('number');
-          expect(typeof comment.votes).toBe('number');
-          expect(typeof comment.created_at).toBe('string');
-          expect(typeof comment.author).toBe('string');
-          expect(typeof comment.body).toBe('string');
-          expect(typeof comment.article_id).toBe('number');
+        expect(comments).toBeSortedBy('created_at', {
+          descending: true,
         });
+        expect(comments).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              comment_id: expect.any(Number),
+              votes: expect.any(Number),
+              created_at: expect.any(String),
+              author: expect.any(String),
+              body: expect.any(String),
+              article_id: expect.any(Number),
+            }),
+          ])
+        );
       });
   });
   test('GET:200 should return array of comments sorted by date in descending order', () => {
@@ -220,10 +226,10 @@ describe('/api/articles/:article_id/comments', () => {
         });
       });
   });
-  test('GET:404 should respond with appropriate message and status code when article exists but has no comments', () => {
+  test('GET:200 should respond with appropriate message and status code when article exists but has no comments', () => {
     return request(app)
       .get('/api/articles/12/comments')
-      .expect(404)
+      .expect(200)
       .then(({ body }) => {
         expect(body.msg).toBe('No comments found for article');
       });
@@ -235,6 +241,14 @@ describe('/api/articles/:article_id/comments', () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe('article_id 9999 not found');
+      });
+  });
+  test('GET:400 should return an appropriate status code and error message when given an invalid ID that is not a number', () => {
+    return request(app)
+      .get('/api/articles/a/comments')
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad Request');
       });
   });
 });
