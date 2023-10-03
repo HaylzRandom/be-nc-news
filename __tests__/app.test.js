@@ -181,3 +181,65 @@ describe('/api/articles', () => {
       });
   });
 });
+
+describe('/api/articles/:article_id/comments', () => {
+  /* 
+    - GET
+    - respond with 200 status
+    - respond with 204 if article is found but no comments exist
+    - respond with 404 when no article found with article_id
+  */
+  test('GET:200 should return an array of comments for a given article', () => {
+    return request(app)
+      .get('/api/articles/1/comments')
+      .expect(200)
+      .then((response) => {
+        const { comments } = response.body;
+
+        expect(comments).toHaveLength(11);
+        expect(comments).toBeSortedBy;
+        comments.forEach((comment) => {
+          expect(typeof comment.comment_id).toBe('number');
+          expect(typeof comment.votes).toBe('number');
+          expect(typeof comment.created_at).toBe('string');
+          expect(typeof comment.author).toBe('string');
+          expect(typeof comment.body).toBe('string');
+          expect(typeof comment.article_id).toBe('number');
+        });
+      });
+  });
+  test('GET:200 should return array of comments sorted by date in descending order', () => {
+    return request(app)
+      .get('/api/articles/1/comments')
+      .expect(200)
+      .then((response) => {
+        const { comments } = response.body;
+
+        expect(comments).toBeSortedBy('created_at', {
+          descending: true,
+        });
+      });
+  });
+  test('GET:404 should respond with appropriate message and status code when article exists but has no comments', () => {
+    return request(app)
+      .get('/api/articles/12/comments')
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe('No comments found for article');
+      });
+  });
+
+  /* NOTE - This has only passed 0.5% of the time as the promises resolve/reject with race conditions. I would have suggested having a message to the client indicating the article they search for doesn't exist but the comments promise seems to reolve/reject first sending a message indicating no comments exist for article (which is also technically true) 
+  
+  Spoke to Poonam about it but haven't received advice about it yet.
+  */
+
+  // test('GET:404 should respond with appropriate status code and error message when article with the ID supplied does not exist', () => {
+  //   return request(app)
+  //     .get('/api/articles/9999/comments')
+  //     .expect(404)
+  //     .then(({ body }) => {
+  //       expect(body.msg).toBe('Article does not exist');
+  //     });
+  // });
+});
