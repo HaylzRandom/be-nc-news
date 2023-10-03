@@ -234,7 +234,7 @@ describe('/api/articles/:article_id/comments', () => {
       .get('/api/articles/9999/comments')
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe('Resource not found');
+        expect(body.msg).toBe('article_id 9999 not found');
       });
   });
 });

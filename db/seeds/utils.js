@@ -29,7 +29,7 @@ exports.checkExists = (table, column, value) => {
 
   return db.query(qryStr, [value]).then(({ rows }) => {
     return rows.length === 0
-      ? Promise.reject({ status: 404, msg: 'Resource not found' })
+      ? Promise.reject({ status: 404, msg: `${column} ${value} not found` })
       : rows;
   });
 };
