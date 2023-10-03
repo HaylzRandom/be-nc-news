@@ -186,7 +186,7 @@ describe('/api/articles/:article_id/comments', () => {
   /* 
     - GET
     - respond with 200 status
-    - respond with 204 if article is found but no comments exist
+    - respond with 404 if article is found but no comments exist
     - respond with 404 when no article found with article_id
   */
   test('GET:200 should return an array of comments for a given article', () => {
