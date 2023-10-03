@@ -117,6 +117,7 @@ describe('/api/articles', () => {
         - GET
         - respond with 200 status code
         - respond with 404 when path not found/misspelled
+        - respond with 400 when passed an invalid query
   */
   test('GET:200 should send an array of all articles', () => {
     return request(app)
