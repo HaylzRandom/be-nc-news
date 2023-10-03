@@ -126,7 +126,7 @@ describe('/api/articles', () => {
       .then((response) => {
         const { articles } = response.body;
 
-        expect(articles).toHaveLength(5);
+        expect(articles).toHaveLength(13);
 
         articles.forEach((article) => {
           expect(typeof article.article_id).toBe('number');
