@@ -355,7 +355,7 @@ describe('/api/articles/:article_id/comments', () => {
   });
 });
 
-describe.only('/api/users', () => {
+describe('/api/users', () => {
   /* 
     - GET
     - respond with 200 status code
