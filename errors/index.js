@@ -9,6 +9,7 @@ exports.handleCustomErrors = (err, req, res, next) => {
 exports.handlePSQLErrors = (err, req, res, next) => {
   switch (err.code) {
     case '22P02':
+    case '23502':
       res.status(400).send({ msg: 'Bad Request' });
       break;
     default:
