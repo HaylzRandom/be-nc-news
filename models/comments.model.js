@@ -39,8 +39,13 @@ exports.addComment = (article_id, comment) => {
     RETURNING *;
   `;
 
-  return checkExists('articles', 'article_id', article_id)
-    .then((value) => {
+  const promises = [
+    checkExists('articles', 'article_id', article_id),
+    checkExists('users', 'username', username),
+  ];
+
+  return Promise.all(promises)
+    .then(() => {
       return db.query(query, [body, article_id, username]).then(({ rows }) => {
         return rows[0];
       });

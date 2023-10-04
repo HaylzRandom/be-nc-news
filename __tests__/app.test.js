@@ -267,6 +267,7 @@ describe('/api/articles/:article_id/comments', () => {
     - respond with 400 when passing an invalid ID
     - respond with 400 when not passing all required information
     - respond with 404 when no article found with article_id 
+    - respond with 404 when user does not exist in users 
   */
   describe('POST Requests', () => {
     test('POST:201 should return newly created comment as an object', () => {
@@ -335,6 +336,20 @@ describe('/api/articles/:article_id/comments', () => {
         .expect(404)
         .then(({ body }) => {
           expect(body.msg).toBe('article_id 999999 not found');
+        });
+    });
+    test('POST:404 should respond with appropriate status code and error message when user who does not exist tries to post', () => {
+      const newComment = {
+        username: 'newUser',
+        body: 'This is a comment...',
+      };
+
+      return request(app)
+        .post('/api/articles/1/comments')
+        .send(newComment)
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe('username newUser not found');
         });
     });
   });
