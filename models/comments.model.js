@@ -20,3 +20,37 @@ exports.getAllCommentsForArticle = (article_id) => {
     }
   });
 };
+
+exports.addComment = (article_id, comment) => {
+  const { username, body } = comment;
+
+  if (!username || !body) {
+    return Promise.reject({
+      status: 400,
+      msg: 'Required information is missing',
+    });
+  }
+
+  const query = `
+    INSERT INTO comments
+    (body, article_id, author)
+    VALUES
+    ($1, $2, $3)
+    RETURNING *;
+  `;
+
+  const promises = [
+    checkExists('articles', 'article_id', article_id),
+    checkExists('users', 'username', username),
+  ];
+
+  return Promise.all(promises)
+    .then(() => {
+      return db.query(query, [body, article_id, username]).then(({ rows }) => {
+        return rows[0];
+      });
+    })
+    .catch((err) => {
+      return Promise.reject(err);
+    });
+};

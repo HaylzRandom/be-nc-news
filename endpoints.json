@@ -57,5 +57,19 @@
         }
       ]
     }
+  },
+  "POST /api/articles:article_id/comments": {
+    "description": "adds a comment to an article",
+    "queries": [],
+    "exampleResponse": {
+      "comment": {
+        "comment_id": 19,
+        "body": "Text from the comment..",
+        "article_id": 7,
+        "author": "weegembump",
+        "votes": 0,
+        "created_at": "2018-05-30T15:59:13.341Z"
+      }
+    }
   }
 }
