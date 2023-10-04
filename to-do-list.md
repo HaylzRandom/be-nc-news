@@ -11,7 +11,7 @@
 - [ ] PATCH /api/articles/:article_id
 - [ ] DELETE /api.comments/:comment_id
 - [ ] GET /api/users
-- [ ] GET /api/articles (topic query)
+- [x] GET /api/articles (topic query)
 - [ ] GET /api/articles/:article_id (comment_count)
 - [ ] Host Application
 - [ ] Complete README

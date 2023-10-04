@@ -1,7 +1,7 @@
 const format = require('pg-format');
 const db = require('../db/connection');
 
-exports.getAllArticles = (order = 'DESC') => {
+exports.getAllArticles = (topic, order = 'DESC') => {
   const validSortOrder = {
     ASC: 'ASC',
     DESC: 'DESC',
@@ -18,12 +18,21 @@ exports.getAllArticles = (order = 'DESC') => {
   FROM articles a
   LEFT JOIN comments c
   ON a.article_id = c.article_id
-  GROUP BY a.article_id
-  ORDER BY a.created_at ${order}; 
   `;
 
-  return db.query(query).then(({ rows }) => {
-    return rows;
+  const values = [];
+
+  if (topic) {
+    query += `WHERE topic = $1`;
+    values.push(topic);
+  }
+
+  query += ` GROUP BY a.article_id
+  ORDER BY a.created_at ${order};`;
+
+
+  return db.query(query, values).then(({ rows }) => {
+    return rows.length === 0 ? Promise.reject({ status: 404, msg: 'Topic does not exist' }) : rows;
   });
 };
 
