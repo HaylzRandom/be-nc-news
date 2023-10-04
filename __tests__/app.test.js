@@ -354,3 +354,33 @@ describe('/api/articles/:article_id/comments', () => {
     });
   });
 });
+
+describe('/api/comments/:comment_id', () => {
+  /* 
+    - DELETE
+    - respond with 204 status code
+    - respond with 400 when sending an invalid ID
+    - respond with 404 when comment with ID cannot be found
+  */
+  describe('DELETE Requests', () => {
+    test('DELETE:204 should respond with 204 status code when comment deleted', () => {
+      return request(app).delete('/api/comments/1').expect(204);
+    });
+    test('DELETE:400 should return an appropriate status code and error message when given an invalid ID', () => {
+      return request(app)
+        .delete('/api/comments/abc')
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe('Bad Request');
+        });
+    });
+    test('DELETE:404 should respond with appropriate status code and error message when comment with the ID supplied does not exist', () => {
+      return request(app)
+        .delete('/api/comments/99999')
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe('comment_id 99999 not found');
+        });
+    });
+  });
+});

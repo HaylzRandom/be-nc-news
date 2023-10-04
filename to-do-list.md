@@ -9,7 +9,7 @@
 - [ ] GET /api/articles/:article_id/comments
 - [ ] POST /api/articles/:article_id/comments
 - [ ] PATCH /api/articles/:article_id
-- [ ] DELETE /api.comments/:comment_id
+- [x] DELETE /api.comments/:comment_id
 - [ ] GET /api/users
 - [ ] GET /api/articles (topic query)
 - [ ] GET /api/articles/:article_id (comment_count)
