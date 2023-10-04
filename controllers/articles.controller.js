@@ -5,9 +5,9 @@ const {
 const { getAllCommentsForArticle } = require('../models/comments.model');
 
 exports.getArticles = (req, res, next) => {
-  const { order } = req.query;
+  const { sort_by, order } = req.query;
 
-  getAllArticles(order)
+  getAllArticles(sort_by, order)
     .then((articles) => {
       res.status(200).send({ articles });
     })
@@ -23,5 +23,3 @@ exports.getArticleById = (req, res, next) => {
     })
     .catch(next);
 };
-
-

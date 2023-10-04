@@ -1,7 +1,14 @@
 const format = require('pg-format');
 const db = require('../db/connection');
 
-exports.getAllArticles = (order = 'DESC') => {
+exports.getAllArticles = (sort_by = 'created_at', order = 'DESC') => {
+  const validSortBy = {
+    created_at: 'created_at',
+    article_id: 'article_id',
+    author: 'author',
+    topic: 'topic',
+  };
+
   const validSortOrder = {
     ASC: 'ASC',
     DESC: 'DESC',
@@ -9,7 +16,7 @@ exports.getAllArticles = (order = 'DESC') => {
     desc: 'DESC',
   };
 
-  if (!(order in validSortOrder)) {
+  if (!(sort_by in validSortBy) || !(order in validSortOrder)) {
     return Promise.reject({ status: 400, msg: 'Invalid Query Passed' });
   }
 
@@ -19,7 +26,7 @@ exports.getAllArticles = (order = 'DESC') => {
   LEFT JOIN comments c
   ON a.article_id = c.article_id
   GROUP BY a.article_id
-  ORDER BY a.created_at ${order}; 
+  ORDER BY a.${validSortBy[sort_by]} ${validSortOrder[order]}; 
   `;
 
   return db.query(query).then(({ rows }) => {

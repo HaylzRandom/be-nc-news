@@ -119,73 +119,133 @@ describe('/api/articles/:article_id', () => {
 });
 
 describe('/api/articles', () => {
-  /* 
+  describe('GET Requests', () => {
+    /* 
         - GET
         - respond with 200 status code
-        - respond with 404 when path not found/misspelled
-        - respond with 400 when passed an invalid query
-  */
-  describe('GET Requests', () => {
-    test('GET:200 should send an array of all articles', () => {
-      return request(app)
-        .get('/api/articles')
-        .expect(200)
-        .then((response) => {
-          const { articles } = response.body;
+        - respond with 404 status code when path not found/misspelled
+    */
+    describe('Basic Queries', () => {
+      test('GET:200 should send an array of all articles', () => {
+        return request(app)
+          .get('/api/articles')
+          .expect(200)
+          .then((response) => {
+            const { articles } = response.body;
 
-          expect(articles).toHaveLength(13);
+            expect(articles).toHaveLength(13);
 
-          articles.forEach((article) => {
-            expect(typeof article.article_id).toBe('number');
-            expect(typeof article.author).toBe('string');
-            expect(typeof article.title).toBe('string');
-            expect(typeof article.topic).toBe('string');
-            expect(typeof article.created_at).toBe('string');
-            expect(typeof article.votes).toBe('number');
-            expect(typeof article.article_img_url).toBe('string');
-            expect(typeof article.comment_count).toBe('number');
-            expect(article).not.toHaveProperty('body');
+            articles.forEach((article) => {
+              expect(typeof article.article_id).toBe('number');
+              expect(typeof article.author).toBe('string');
+              expect(typeof article.title).toBe('string');
+              expect(typeof article.topic).toBe('string');
+              expect(typeof article.created_at).toBe('string');
+              expect(typeof article.votes).toBe('number');
+              expect(typeof article.article_img_url).toBe('string');
+              expect(typeof article.comment_count).toBe('number');
+              expect(article).not.toHaveProperty('body');
+            });
           });
-        });
-    });
-    test('GET:200 should send array sorted by date in descending order', () => {
-      return request(app)
-        .get('/api/articles')
-        .expect(200)
-        .then((response) => {
-          const { articles } = response.body;
-
-          expect(articles).toBeSortedBy('created_at', {
-            descending: true,
+      });
+      test('GET:404 should respond with approriate error status code and error message when path does not exist', () => {
+        return request(app)
+          .get('/api/articl3s')
+          .expect(404)
+          .then(({ body }) => {
+            expect(body.msg).toBe('Path Not Found');
           });
-        });
+      });
     });
-    test('GET:200 should send array sorted by date in ascending order when passed as a query', () => {
-      return request(app)
-        .get('/api/articles?order=asc')
-        .then((response) => {
-          const { articles } = response.body;
 
-          expect(articles).toBeSortedBy('created_at', {
-            ascending: true,
+    /*
+       - Order Queries
+        - respond with 200 status code and array ordered by created_at descending by default
+        - respond with 200 status code and if order query passed in, order by value (e.g. ASC or DESC)
+        - respond with 400 status code when passed an invalid query for order by
+    */
+    describe('Order By Queries', () => {
+      test('GET:200 should send array sorted by date in descending order', () => {
+        return request(app)
+          .get('/api/articles')
+          .expect(200)
+          .then((response) => {
+            const { articles } = response.body;
+
+            expect(articles).toBeSortedBy('created_at', {
+              descending: true,
+            });
           });
-        });
+      });
+      test('GET:200 should send array sorted by date in ascending order when passed as a query', () => {
+        return request(app)
+          .get('/api/articles?order=asc')
+          .then((response) => {
+            const { articles } = response.body;
+
+            expect(articles).toBeSortedBy('created_at', {
+              ascending: true,
+            });
+          });
+      });
+      test('GET:400 should respond with appropriate error status code and error message when passed an order query that is invalid', () => {
+        return request(app)
+          .get('/api/articles?order=1')
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe('Invalid Query Passed');
+          });
+      });
     });
-    test('GET:404 should respond with approriate error status code and error message when path does not exist', () => {
-      return request(app)
-        .get('/api/articl3s')
-        .expect(404)
-        .then(({ body }) => {
-          expect(body.msg).toBe('Path Not Found');
-        });
-    });
-    test('GET:400 should respond with appropriate error status code and error message when passed an order query that is invalid', () => {
-      return request(app)
-        .get('/api/articles?order=1')
-        .expect(400)
-        .then(({ body }) => {
-          expect(body.msg).toBe('Invalid Query Passed');
-        });
+    /* 
+        - Sort By Queries
+        - respond with 200 status code and array sorted by created at by default
+        - respond with 200 status code and if sort by query passed in, sort by that column if valid
+        - respond with 400 status code when passed an invalid query for sort by
+    */
+    describe('Sort By Queries', () => {
+      test('GET:200 should send array sorted by created_at', () => {
+        return request(app)
+          .get('/api/articles')
+          .expect(200)
+          .then((response) => {
+            const { articles } = response.body;
+
+            expect(articles).toBeSortedBy('created_at', {
+              descending: true,
+            });
+          });
+      });
+      test('GET:200 should send array sorted by column passed in query', () => {
+        return request(app)
+          .get('/api/articles?sort_by=article_id')
+          .then((response) => {
+            const { articles } = response.body;
+
+            expect(articles).toBeSortedBy('article_id', {
+              descending: true,
+            });
+          });
+      });
+      test('GET:200 should send array sorted by column and order by query passed in', () => {
+        return request(app)
+          .get('/api/articles?sort_by=topic&order=asc')
+          .then((response) => {
+            const { articles } = response.body;
+
+            expect(articles).toBeSortedBy('topic', {
+              ascending: true,
+            });
+          });
+      });
+      test('GET:400 should respond with appropriate error status code and error message when passed an sort by query that is invalid', () => {
+        return request(app)
+          .get('/api/articles?sort_by=cheese')
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe('Invalid Query Passed');
+          });
+      });
     });
   });
 });
