@@ -354,3 +354,39 @@ describe('/api/articles/:article_id/comments', () => {
     });
   });
 });
+
+describe.only('/api/users', () => {
+  /* 
+    - GET
+    - respond with 200 status code
+    - respond with 404 when incorrect path entered
+  */
+  test('GET:200 should return an array of user objects', () => {
+    return request(app)
+      .get('/api/users')
+      .expect(200)
+      .then((response) => {
+        const { users } = response.body;
+
+        expect(users).toHaveLength(4);
+
+        expect(users).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              username: expect.any(String),
+              name: expect.any(String),
+              avatar_url: expect.any(String),
+            }),
+          ])
+        );
+      });
+  });
+  test('GET:404 should respond with appropriate status code and error message when path incorrect', () => {
+    return request(app)
+      .get('/api/user')
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Path Not Found');
+      });
+  });
+});
