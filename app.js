@@ -4,6 +4,7 @@ const { getEndpoints } = require('./controllers/api.controller');
 const {
   getArticleById,
   getArticles,
+  getCommentsForArticle,
 } = require('./controllers/articles.controller');
 const {
   handleCustomErrors,
@@ -21,6 +22,7 @@ app.get('/api', getEndpoints);
 // /api/articles
 app.get('/api/articles', getArticles);
 app.get('/api/articles/:article_id', getArticleById);
+app.get('/api/articles/:article_id/comments', getCommentsForArticle);
 
 // /api/topics
 app.get('/api/topics', getTopics);
