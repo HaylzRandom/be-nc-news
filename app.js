@@ -18,6 +18,7 @@ const {
 const {
   addCommentForArticle,
   getCommentsForArticle,
+  deleteComment,
 } = require('./controllers/comments.controller');
 
 const app = express();
@@ -34,6 +35,8 @@ app.get('/api/articles/:article_id/comments', getCommentsForArticle);
 
 app.post('/api/articles/:article_id/comments', addCommentForArticle);
 
+// /api/comments
+app.delete('/api/comments/:comment_id', deleteComment);
 app.patch('/api/articles/:article_id', updateArticle);
 
 // /api/topics
