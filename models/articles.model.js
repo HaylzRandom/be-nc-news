@@ -1,8 +1,15 @@
 const db = require('../db/connection');
 const { checkExists } = require('../db/seeds/utils');
 
-exports.getAllArticles = (topic, order = 'DESC') => {
+exports.getAllArticles = (sort_by = 'created_at', topic, order = 'DESC') => {
   const topicRegex = /^\d+$/;
+
+  const validSortBy = {
+    created_at: 'created_at',
+    article_id: 'article_id',
+    author: 'author',
+    topic: 'topic',
+  };
 
   const validSortOrder = {
     ASC: 'ASC',
@@ -11,7 +18,11 @@ exports.getAllArticles = (topic, order = 'DESC') => {
     desc: 'DESC',
   };
 
-  if (!(order in validSortOrder) || topicRegex.test(topic)) {
+  if (
+    !(sort_by in validSortBy) ||
+    !(order in validSortOrder) ||
+    topicRegex.test(topic)
+  ) {
     return Promise.reject({ status: 400, msg: 'Invalid Query Passed' });
   }
 
@@ -30,7 +41,7 @@ exports.getAllArticles = (topic, order = 'DESC') => {
   }
 
   query += ` GROUP BY a.article_id
-  ORDER BY a.created_at ${order};`;
+  ORDER BY a.${validSortBy[sort_by]} ${validSortOrder[order]};`;
 
   return db.query(query, values).then(({ rows }) => {
     return rows.length === 0
