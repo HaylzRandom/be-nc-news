@@ -26,7 +26,7 @@
 - [x] GET /api/articles (sorting queries)
 - [x] Express Routers
 - [ ] GET /api/users/:username
-- [ ] PATCH /api/comments/:comment_id
+- [x] PATCH /api/comments/:comment_id
 - [ ] POST /api/articles
 - [ ] GET /api/articles (pagination)
 - [ ] GET /api/articles/:article_id/comments (pagination)
