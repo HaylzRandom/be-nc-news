@@ -234,122 +234,136 @@ describe('/api/articles/:article_id', () => {
         });
     });
   });
-  /* 
-    - PATCH
-    - respond with 200 status code when article has been updated
-    - respond with 200 status code and increment votes correctly
-    - respond with 200 status code and decrement votes correctly
-    - respond with 400 status code if sent data missing required parameters
-    - respond with 400 status code if sent data has incorrect data type
-    - respond with 400 status code when sending an invalid ID
-    - respond with 404 status code if article cannot be found with ID
-  */
-  describe('PATCH Requests', () => {
-    test('PATCH:200 should return updated article object', () => {
-      const updatedArticle = {
-        inc_votes: 1,
-      };
+});
 
-      return request(app)
-        .patch('/api/articles/1')
-        .send(updatedArticle)
-        .expect(200)
-        .then((response) => {
-          const { article } = response.body;
+describe('/api/articles', () => {
+  describe('GET Requests', () => {
+    /* 
+        - GET
+        - respond with 200 status code
+        - respond with 404 status code when path not found/misspelled
+    */
+    describe('Basic Queries', () => {
+      test('GET:200 should send an array of all articles', () => {
+        return request(app)
+          .get('/api/articles')
+          .expect(200)
+          .then((response) => {
+            const { articles } = response.body;
 
-          expect(article).toEqual(
-            expect.objectContaining({
-              article_id: expect.any(Number),
-              title: expect.any(String),
-              topic: expect.any(String),
-              author: expect.any(String),
-              body: expect.any(String),
-              created_at: expect.any(String),
-              votes: expect.any(Number),
-              article_img_url: expect.any(String),
-            })
-          );
+            expect(articles).toHaveLength(13);
 
-          expect(article.votes).toBe(101);
-        });
+            articles.forEach((article) => {
+              expect(typeof article.article_id).toBe('number');
+              expect(typeof article.author).toBe('string');
+              expect(typeof article.title).toBe('string');
+              expect(typeof article.topic).toBe('string');
+              expect(typeof article.created_at).toBe('string');
+              expect(typeof article.votes).toBe('number');
+              expect(typeof article.article_img_url).toBe('string');
+              expect(typeof article.comment_count).toBe('number');
+              expect(article).not.toHaveProperty('body');
+            });
+          });
+      });
+      test('GET:404 should respond with approriate error status code and error message when path does not exist', () => {
+        return request(app)
+          .get('/api/articl3s')
+          .expect(404)
+          .then(({ body }) => {
+            expect(body.msg).toBe('Path Not Found');
+          });
+      });
     });
-    test('PATCH:200 should return updated article object with votes incremented by passed in value', () => {
-      const updatedArticle = {
-        inc_votes: 1,
-      };
 
-      return request(app)
-        .patch('/api/articles/13')
-        .send(updatedArticle)
-        .expect(200)
-        .then((response) => {
-          const { article } = response.body;
-          expect(article.votes).toBe(1);
-        });
+    /*
+       - Order Queries
+        - respond with 200 status code and array ordered by created_at descending by default
+        - respond with 200 status code and if order query passed in, order by value (e.g. ASC or DESC)
+        - respond with 400 status code when passed an invalid query for order by
+    */
+    describe('Order By Queries', () => {
+      test('GET:200 should send array sorted by date in descending order', () => {
+        return request(app)
+          .get('/api/articles')
+          .expect(200)
+          .then((response) => {
+            const { articles } = response.body;
+
+            expect(articles).toBeSortedBy('created_at', {
+              descending: true,
+            });
+          });
+      });
+      test('GET:200 should send array sorted by date in ascending order when passed as a query', () => {
+        return request(app)
+          .get('/api/articles?order=asc')
+          .then((response) => {
+            const { articles } = response.body;
+
+            expect(articles).toBeSortedBy('created_at', {
+              ascending: true,
+            });
+          });
+      });
+      test('GET:400 should respond with appropriate error status code and error message when passed an order query that is invalid', () => {
+        return request(app)
+          .get('/api/articles?order=1')
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe('Invalid Query Passed');
+          });
+      });
     });
-    test('PATCH:200 should return updated article object with votes decremented by passed in value', () => {
-      const updatedArticle = {
-        inc_votes: -50,
-      };
+    /* 
+        - Sort By Queries
+        - respond with 200 status code and array sorted by created at by default
+        - respond with 200 status code and if sort by query passed in, sort by that column if valid
+        - respond with 400 status code when passed an invalid query for sort by
+    */
+    describe('Sort By Queries', () => {
+      test('GET:200 should send array sorted by created_at', () => {
+        return request(app)
+          .get('/api/articles')
+          .expect(200)
+          .then((response) => {
+            const { articles } = response.body;
 
-      return request(app)
-        .patch('/api/articles/1')
-        .send(updatedArticle)
-        .expect(200)
-        .then((response) => {
-          const { article } = response.body;
-          expect(article.votes).toBe(50);
-        });
-    });
-    test('PATCH:400 should respond with appropriate status code and error message when body is missing required information', () => {
-      const updatedArticle = {};
+            expect(articles).toBeSortedBy('created_at', {
+              descending: true,
+            });
+          });
+      });
+      test('GET:200 should send array sorted by column passed in query', () => {
+        return request(app)
+          .get('/api/articles?sort_by=article_id')
+          .then((response) => {
+            const { articles } = response.body;
 
-      return request(app)
-        .patch('/api/articles/1')
-        .send(updatedArticle)
-        .expect(400)
-        .then(({ body }) => {
-          expect(body.msg).toBe('Required information is missing');
-        });
-    });
-    test('PATCH:400 should respond with appropriate status code and error message when body has incorrect value types', () => {
-      const updatedArticle = {
-        inc_votes: 'a',
-      };
+            expect(articles).toBeSortedBy('article_id', {
+              descending: true,
+            });
+          });
+      });
+      test('GET:200 should send array sorted by column and order by query passed in', () => {
+        return request(app)
+          .get('/api/articles?sort_by=topic&order=asc')
+          .then((response) => {
+            const { articles } = response.body;
 
-      return request(app)
-        .patch('/api/articles/1')
-        .send(updatedArticle)
-        .expect(400)
-        .then(({ body }) => {
-          expect(body.msg).toBe('Bad Request');
-        });
-    });
-    test('PATCH:400 should respond with appropriate status code and error message when passing an invalid ID', () => {
-      const updatedArticle = {
-        inc_votes: 1,
-      };
-
-      return request(app)
-        .patch('/api/articles/abc')
-        .send(updatedArticle)
-        .expect(400)
-        .then(({ body }) => {
-          expect(body.msg).toBe('Bad Request');
-        });
-    });
-    test('PATCH:404 should respond with appropriate status code and error message when article with ID supplied does not exist', () => {
-      const updatedArticle = {
-        inc_votes: 1,
-      };
-
-      return request(app)
-        .patch('/api/articles/9999')
-        .send(updatedArticle)
-        .expect(404)
-        .then(({ body }) => {
-          expect(body.msg).toBe('article_id 9999 not found');
-        });
+            expect(articles).toBeSortedBy('topic', {
+              ascending: true,
+            });
+          });
+      });
+      test('GET:400 should respond with appropriate error status code and error message when passed an sort by query that is invalid', () => {
+        return request(app)
+          .get('/api/articles?sort_by=cheese')
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe('Invalid Query Passed');
+          });
+      });
     });
   });
 });
@@ -686,6 +700,37 @@ describe('/api/comments/:comment_id', () => {
         .expect(404)
         .then(({ body }) => {
           expect(body.msg).toBe('comment_id 9999 not found');
+        });
+    });
+  });
+});
+
+describe('/api/users/:username', () => {
+  describe('GET Requests', () => {
+    test('GET:200 should return a single user object to client', () => {
+      const expectedObj = {
+        username: 'butter_bridge',
+        name: 'jonny',
+        avatar_url:
+          'https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg',
+      };
+
+      return request(app)
+        .get('/api/users/butter_bridge')
+        .expect(200)
+        .then((response) => {
+          const { user } = response.body;
+
+          expect(user).toBeObject();
+          expect(user).toMatchObject(expectedObj);
+        });
+    });
+    test('GET:404 should respond with appropriate status code and error message when user with a username does not exist', () => {
+      return request(app)
+        .get('/api/users/does-not-exist')
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toEqual('username does-not-exist not found');
         });
     });
   });
