@@ -40,13 +40,20 @@ exports.getAllArticles = (topic, order = 'DESC') => {
 };
 
 exports.selectArticleById = (article_id) => {
-  return db
-    .query(`SELECT * FROM articles WHERE article_id = $1;`, [article_id])
-    .then(({ rows }) => {
-      return rows.length === 0
-        ? Promise.reject({ status: 404, msg: 'Article does not exist' })
-        : rows[0];
-    });
+  const query = `
+  SELECT a.*, COUNT(c.comment_id)::INT as comment_count 
+  FROM articles a
+  JOIN comments c
+  ON a.article_id = c.article_id
+  WHERE a.article_id = $1
+  GROUP BY a.article_id;
+  `;
+
+  return db.query(query, [article_id]).then(({ rows }) => {
+    return rows.length === 0
+      ? Promise.reject({ status: 404, msg: 'Article does not exist' })
+      : rows[0];
+  });
 };
 
 exports.updateArticleById = (article_id, article) => {
