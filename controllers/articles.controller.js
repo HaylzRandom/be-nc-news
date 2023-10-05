@@ -6,9 +6,9 @@ const {
 const { getAllCommentsForArticle } = require('../models/comments.model');
 
 exports.getArticles = (req, res, next) => {
-  const { order } = req.query;
+  const { topic, order } = req.query;
 
-  getAllArticles(order)
+  getAllArticles(topic, order)
     .then((articles) => {
       res.status(200).send({ articles });
     })
