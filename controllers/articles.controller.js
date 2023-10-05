@@ -1,13 +1,14 @@
 const {
   selectArticleById,
   getAllArticles,
+  updateArticleById,
 } = require('../models/articles.model');
 const { getAllCommentsForArticle } = require('../models/comments.model');
 
 exports.getArticles = (req, res, next) => {
-  const { sort_by, order } = req.query;
+  const { sort_by, topic, order } = req.query;
 
-  getAllArticles(sort_by, order)
+  getAllArticles(sort_by, topic, order)
     .then((articles) => {
       res.status(200).send({ articles });
     })
@@ -18,6 +19,17 @@ exports.getArticleById = (req, res, next) => {
   const { article_id } = req.params;
 
   selectArticleById(article_id)
+    .then((article) => {
+      res.status(200).send({ article });
+    })
+    .catch(next);
+};
+
+exports.updateArticle = (req, res, next) => {
+  const { article_id } = req.params;
+  const update = req.body;
+
+  updateArticleById(article_id, update)
     .then((article) => {
       res.status(200).send({ article });
     })

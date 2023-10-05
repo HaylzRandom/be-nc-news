@@ -1,7 +1,9 @@
-const format = require('pg-format');
 const db = require('../db/connection');
+const { checkExists } = require('../db/seeds/utils');
 
-exports.getAllArticles = (sort_by = 'created_at', order = 'DESC') => {
+exports.getAllArticles = (sort_by = 'created_at', topic, order = 'DESC') => {
+  const topicRegex = /^\d+$/;
+
   const validSortBy = {
     created_at: 'created_at',
     article_id: 'article_id',
@@ -16,7 +18,11 @@ exports.getAllArticles = (sort_by = 'created_at', order = 'DESC') => {
     desc: 'DESC',
   };
 
-  if (!(sort_by in validSortBy) || !(order in validSortOrder)) {
+  if (
+    !(sort_by in validSortBy) ||
+    !(order in validSortOrder) ||
+    topicRegex.test(topic)
+  ) {
     return Promise.reject({ status: 400, msg: 'Invalid Query Passed' });
   }
 
@@ -25,21 +31,66 @@ exports.getAllArticles = (sort_by = 'created_at', order = 'DESC') => {
   FROM articles a
   LEFT JOIN comments c
   ON a.article_id = c.article_id
-  GROUP BY a.article_id
-  ORDER BY a.${validSortBy[sort_by]} ${validSortOrder[order]}; 
   `;
 
-  return db.query(query).then(({ rows }) => {
-    return rows;
+  const values = [];
+
+  if (topic) {
+    query += `WHERE topic = $1`;
+    values.push(topic);
+  }
+
+  query += ` GROUP BY a.article_id
+  ORDER BY a.${validSortBy[sort_by]} ${validSortOrder[order]};`;
+
+  return db.query(query, values).then(({ rows }) => {
+    return rows.length === 0
+      ? Promise.reject({ status: 404, msg: 'Topic does not exist' })
+      : rows;
   });
 };
 
 exports.selectArticleById = (article_id) => {
-  return db
-    .query(`SELECT * FROM articles WHERE article_id = $1;`, [article_id])
+  const query = `
+  SELECT a.*, COUNT(c.comment_id)::INT as comment_count 
+  FROM articles a
+  JOIN comments c
+  ON a.article_id = c.article_id
+  WHERE a.article_id = $1
+  GROUP BY a.article_id;
+  `;
+
+  return db.query(query, [article_id]).then(({ rows }) => {
+    return rows.length === 0
+      ? Promise.reject({ status: 404, msg: 'Article does not exist' })
+      : rows[0];
+  });
+};
+
+exports.updateArticleById = (article_id, article) => {
+  const { inc_votes } = article;
+
+  if (!inc_votes) {
+    return Promise.reject({
+      status: 400,
+      msg: 'Required information is missing',
+    });
+  }
+
+  const query = `
+  UPDATE articles
+  SET
+  votes = votes + $1
+  WHERE 
+  article_id = $2
+  RETURNING *;
+  `;
+
+  return checkExists('articles', 'article_id', article_id)
+    .then(() => {
+      return db.query(query, [inc_votes, article_id]);
+    })
     .then(({ rows }) => {
-      return rows.length === 0
-        ? Promise.reject({ status: 404, msg: 'Article does not exist' })
-        : rows[0];
+      return rows[0];
     });
 };
