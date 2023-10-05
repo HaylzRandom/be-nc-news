@@ -57,9 +57,11 @@ exports.updateArticleById = (article_id, article) => {
   RETURNING *;
   `;
 
-  return checkExists('articles', 'article_id', article_id).then(() => {
-    return db.query(query, [inc_votes, article_id]).then(({ rows }) => {
+  return checkExists('articles', 'article_id', article_id)
+    .then(() => {
+      return db.query(query, [inc_votes, article_id]);
+    })
+    .then(({ rows }) => {
       return rows[0];
     });
-  });
 };

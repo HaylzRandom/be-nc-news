@@ -151,6 +151,8 @@ describe('/api/articles/:article_id', () => {
               article_img_url: expect.any(String),
             })
           );
+
+          expect(article.votes).toBe(101);
         });
     });
     test('PATCH:200 should return updated article object with votes incremented by passed in value', () => {
