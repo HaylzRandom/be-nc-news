@@ -116,6 +116,124 @@ describe('/api/articles/:article_id', () => {
         });
     });
   });
+  /* 
+    - PATCH
+    - respond with 200 status code when article has been updated
+    - respond with 200 status code and increment votes correctly
+    - respond with 200 status code and decrement votes correctly
+    - respond with 400 status code if sent data missing required parameters
+    - respond with 400 status code if sent data has incorrect data type
+    - respond with 400 status code when sending an invalid ID
+    - respond with 404 status code if article cannot be found with ID
+  */
+  describe('PATCH Requests', () => {
+    test('PATCH:200 should return updated article object', () => {
+      const updatedArticle = {
+        inc_votes: 1,
+      };
+
+      return request(app)
+        .patch('/api/articles/1')
+        .send(updatedArticle)
+        .expect(200)
+        .then((response) => {
+          const { article } = response.body;
+
+          expect(article).toEqual(
+            expect.objectContaining({
+              article_id: expect.any(Number),
+              title: expect.any(String),
+              topic: expect.any(String),
+              author: expect.any(String),
+              body: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              article_img_url: expect.any(String),
+            })
+          );
+
+          expect(article.votes).toBe(101);
+        });
+    });
+    test('PATCH:200 should return updated article object with votes incremented by passed in value', () => {
+      const updatedArticle = {
+        inc_votes: 1,
+      };
+
+      return request(app)
+        .patch('/api/articles/13')
+        .send(updatedArticle)
+        .expect(200)
+        .then((response) => {
+          const { article } = response.body;
+          expect(article.votes).toBe(1);
+        });
+    });
+    test('PATCH:200 should return updated article object with votes decremented by passed in value', () => {
+      const updatedArticle = {
+        inc_votes: -50,
+      };
+
+      return request(app)
+        .patch('/api/articles/1')
+        .send(updatedArticle)
+        .expect(200)
+        .then((response) => {
+          const { article } = response.body;
+          expect(article.votes).toBe(50);
+        });
+    });
+    test('PATCH:400 should respond with appropriate status code and error message when body is missing required information', () => {
+      const updatedArticle = {};
+
+      return request(app)
+        .patch('/api/articles/1')
+        .send(updatedArticle)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe('Required information is missing');
+        });
+    });
+    test('PATCH:400 should respond with appropriate status code and error message when body has incorrect value types', () => {
+      const updatedArticle = {
+        inc_votes: 'a',
+      };
+
+      return request(app)
+        .patch('/api/articles/1')
+        .send(updatedArticle)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe('Bad Request');
+        });
+    });
+    test('PATCH:400 should respond with appropriate status code and error message when passing an invalid ID', () => {
+      const updatedArticle = {
+        inc_votes: 1,
+      };
+
+      return request(app)
+        .patch('/api/articles/abc')
+        .send(updatedArticle)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe('Bad Request');
+        });
+    });
+    test('PATCH:404 should respond with appropriate status code and error message when article with ID supplied does not exist', () => {
+      const updatedArticle = {
+        inc_votes: 1,
+      };
+
+      return request(app)
+        .patch('/api/articles/9999')
+        .send(updatedArticle)
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe('article_id 9999 not found');
+        });
+    });
+  });
 });
 
 describe('/api/articles', () => {
