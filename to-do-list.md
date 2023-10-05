@@ -19,12 +19,12 @@
 - [x] POST /api/articles/:article_id/comments
 - [x] PATCH /api/articles/:article_id
 - [x] Host Application
-- [ ] Complete README
+- [x] Complete README
 
 
 ### Advanced
 - [x] GET /api/articles (sorting queries)
-- [ ] Express Routers
+- [x] Express Routers
 - [ ] GET /api/users/:username
 - [ ] PATCH /api/comments/:comment_id
 - [ ] POST /api/articles
