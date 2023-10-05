@@ -1,4 +1,5 @@
 const db = require('../db/connection');
+const { checkExists } = require('../db/seeds/utils');
 
 exports.getAllArticles = (topic, order = 'DESC') => {
   const topicRegex = /^\d+$/;
@@ -45,5 +46,33 @@ exports.selectArticleById = (article_id) => {
       return rows.length === 0
         ? Promise.reject({ status: 404, msg: 'Article does not exist' })
         : rows[0];
+    });
+};
+
+exports.updateArticleById = (article_id, article) => {
+  const { inc_votes } = article;
+
+  if (!inc_votes) {
+    return Promise.reject({
+      status: 400,
+      msg: 'Required information is missing',
+    });
+  }
+
+  const query = `
+  UPDATE articles
+  SET
+  votes = votes + $1
+  WHERE 
+  article_id = $2
+  RETURNING *;
+  `;
+
+  return checkExists('articles', 'article_id', article_id)
+    .then(() => {
+      return db.query(query, [inc_votes, article_id]);
+    })
+    .then(({ rows }) => {
+      return rows[0];
     });
 };

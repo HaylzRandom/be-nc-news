@@ -12,6 +12,14 @@
 - [ ] DELETE /api.comments/:comment_id
 - [ ] GET /api/users
 - [x] GET /api/articles (topic query)
+- [x] DELETE /api.comments/:comment_id
+- [x] GET /api/articles
+- [x] GET /api/articles/:article_id/comments
+- [x] POST /api/articles/:article_id/comments
+- [x] PATCH /api/articles/:article_id
+- [ ] DELETE /api/comments/:comment_id
+- [x] GET /api/users
+- [ ] GET /api/articles (topic query)
 - [ ] GET /api/articles/:article_id (comment_count)
 - [ ] Host Application
 - [ ] Complete README
