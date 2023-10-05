@@ -20,7 +20,7 @@ const {
   getCommentsForArticle,
   deleteComment,
 } = require('./controllers/comments.controller');
-const { getUsers } = require('./controllers/users.controller');
+const { getUsers, getUser } = require('./controllers/users.controller');
 
 const app = express();
 
@@ -45,6 +45,7 @@ app.get('/api/topics', getTopics);
 
 // /api/users
 app.get('/api/users', getUsers);
+app.get('/api/users/:username', getUser);
 
 app.all('/*', (req, res, next) => {
   res.status(404).send({ msg: 'Path Not Found' });

@@ -107,5 +107,16 @@
   "DELETE /api/comments/:comment_id": {
     "description": "deletes a comment",
     "queries": []
+  },
+  "GET /api/users/:username": {
+    "description": "serves a single object of a user",
+    "queries": [],
+    "exampleResponse": {
+      "user": {
+        "username": "butter_bridge",
+        "name": "jonny",
+        "avatar_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png"
+      }
+    }
   }
 }
