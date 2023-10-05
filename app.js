@@ -5,25 +5,9 @@ const {
   handleCustomErrors,
   handlePSQLErrors,
   handleServerErrors,
-} = require('./errors');
+} = require('./middleware/errorHandler');
 
-// Controllers
-const { getTopics } = require('./controllers/topics.controller');
-const { getEndpoints } = require('./controllers/api.controller');
-const {
-  getArticleById,
-  getArticles,
-  updateArticle,
-} = require('./controllers/articles.controller');
-const {
-  addCommentForArticle,
-  getCommentsForArticle,
-  deleteComment,
-} = require('./controllers/comments.controller');
-const { getUsers } = require('./controllers/users.controller');
-
-const apiRouter = require('./routes/api.router');
-const articlesRouter = require('./routes/articles.router');
+const apiRouter = require('./routes/api.routes');
 
 const app = express();
 

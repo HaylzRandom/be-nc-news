@@ -2,10 +2,11 @@ const { deleteComment } = require('../controllers/comments.controller');
 
 const commentsRouter = require('express').Router();
 
-commentsRouter.get('/', (req, res) => {
+commentsRouter.route('/').get((req, res) => {
+  // Future implementation of adding a get all comments query
   res.status(200).send('All okay from comments');
 });
 
-commentsRouter.delete('/:comment_id', deleteComment);
+commentsRouter.route('/:comment_id').delete(deleteComment);
 
 module.exports = commentsRouter;

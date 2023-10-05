@@ -2,6 +2,6 @@ const { getUsers } = require('../controllers/users.controller');
 
 const userRouter = require('express').Router();
 
-userRouter.get('/', getUsers);
+userRouter.route('/').get(getUsers);
 
 module.exports = userRouter;

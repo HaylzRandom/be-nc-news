@@ -1,12 +1,12 @@
 const { getEndpoints } = require('../controllers/api.controller');
-const articlesRouter = require('./articles.router');
-const commentsRouter = require('./comments.router');
-const topicsRouter = require('./topics.router');
-const userRouter = require('./users.router');
+const articlesRouter = require('./articles.routes');
+const commentsRouter = require('./comments.routes');
+const topicsRouter = require('./topics.routes');
+const userRouter = require('./users.routes');
 
 const apiRouter = require('express').Router();
 
-apiRouter.get('/', getEndpoints);
+apiRouter.route('/').get(getEndpoints);
 
 apiRouter.use('/articles', articlesRouter);
 apiRouter.use('/comments', commentsRouter);
