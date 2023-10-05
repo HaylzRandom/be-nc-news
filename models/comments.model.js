@@ -62,3 +62,31 @@ exports.deleteCommentById = (comment_id) => {
     ]);
   });
 };
+
+exports.updateCommentbyId = (comment_id, comment) => {
+  const { inc_votes } = comment;
+
+  if (!inc_votes) {
+    return Promise.reject({
+      status: 400,
+      msg: 'Required information is missing',
+    });
+  }
+
+  const query = `
+  UPDATE comments
+  SET
+  votes = votes + $1
+  WHERE
+  comment_id = $2
+  RETURNING *;
+  `;
+
+  return checkExists('comments', 'comment_id', comment_id)
+    .then(() => {
+      return db.query(query, [inc_votes, comment_id]);
+    })
+    .then(({ rows }) => {
+      return rows[0];
+    });
+};

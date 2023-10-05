@@ -19,6 +19,7 @@ const {
   addCommentForArticle,
   getCommentsForArticle,
   deleteComment,
+  updateComment,
 } = require('./controllers/comments.controller');
 const { getUsers } = require('./controllers/users.controller');
 
@@ -33,12 +34,13 @@ app.get('/api', getEndpoints);
 app.get('/api/articles', getArticles);
 app.get('/api/articles/:article_id', getArticleById);
 app.get('/api/articles/:article_id/comments', getCommentsForArticle);
+app.patch('/api/articles/:article_id', updateArticle);
 
 app.post('/api/articles/:article_id/comments', addCommentForArticle);
 
 // /api/comments
 app.delete('/api/comments/:comment_id', deleteComment);
-app.patch('/api/articles/:article_id', updateArticle);
+app.patch('/api/comments/:comment_id', updateComment);
 
 // /api/topics
 app.get('/api/topics', getTopics);
