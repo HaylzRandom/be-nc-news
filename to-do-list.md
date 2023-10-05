@@ -14,8 +14,8 @@
 - [x] GET /api/articles/:article_id/comments
 - [x] POST /api/articles/:article_id/comments
 - [x] PATCH /api/articles/:article_id
-- [ ] DELETE /api.comments/:comment_id
-- [ ] GET /api/users
+- [ ] DELETE /api/comments/:comment_id
+- [x] GET /api/users
 - [ ] GET /api/articles (topic query)
 - [ ] GET /api/articles/:article_id (comment_count)
 - [ ] Host Application
