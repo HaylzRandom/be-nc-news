@@ -22,29 +22,14 @@ const {
 } = require('./controllers/comments.controller');
 const { getUsers } = require('./controllers/users.controller');
 
+const apiRouter = require('./routes/api.router');
+const articlesRouter = require('./routes/articles.router');
+
 const app = express();
 
 app.use(express.json());
 
-// /api
-app.get('/api', getEndpoints);
-
-// /api/articles
-app.get('/api/articles', getArticles);
-app.get('/api/articles/:article_id', getArticleById);
-app.get('/api/articles/:article_id/comments', getCommentsForArticle);
-
-app.post('/api/articles/:article_id/comments', addCommentForArticle);
-
-// /api/comments
-app.delete('/api/comments/:comment_id', deleteComment);
-app.patch('/api/articles/:article_id', updateArticle);
-
-// /api/topics
-app.get('/api/topics', getTopics);
-
-// /api/users
-app.get('/api/users', getUsers);
+app.use('/api', apiRouter);
 
 app.all('/*', (req, res, next) => {
   res.status(404).send({ msg: 'Path Not Found' });

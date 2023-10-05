@@ -19,7 +19,7 @@
 - [x] POST /api/articles/:article_id/comments
 - [x] PATCH /api/articles/:article_id
 - [x] Host Application
-- [ ] Complete README
+- [x] Complete README
 
 
 ### Advanced
