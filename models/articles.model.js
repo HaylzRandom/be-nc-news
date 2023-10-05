@@ -1,7 +1,8 @@
-const format = require('pg-format');
 const db = require('../db/connection');
 
 exports.getAllArticles = (topic, order = 'DESC') => {
+  const topicRegex = /^\d+$/;
+
   const validSortOrder = {
     ASC: 'ASC',
     DESC: 'DESC',
@@ -9,7 +10,7 @@ exports.getAllArticles = (topic, order = 'DESC') => {
     desc: 'DESC',
   };
 
-  if (!(order in validSortOrder)) {
+  if (!(order in validSortOrder) || topicRegex.test(topic)) {
     return Promise.reject({ status: 400, msg: 'Invalid Query Passed' });
   }
 
@@ -30,9 +31,10 @@ exports.getAllArticles = (topic, order = 'DESC') => {
   query += ` GROUP BY a.article_id
   ORDER BY a.created_at ${order};`;
 
-
   return db.query(query, values).then(({ rows }) => {
-    return rows.length === 0 ? Promise.reject({ status: 404, msg: 'Topic does not exist' }) : rows;
+    return rows.length === 0
+      ? Promise.reject({ status: 404, msg: 'Topic does not exist' })
+      : rows;
   });
 };
 

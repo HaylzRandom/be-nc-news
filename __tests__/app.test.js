@@ -161,9 +161,17 @@ describe('/api/articles', () => {
           expect(body.msg).toBe('Invalid Query Passed');
         });
     });
-    test('GET:404 should respond with appropriate error status code and error message when passed a topic that does not exist', () => {
+    test('GET:400 should respond with appropriate error status code and error message when passed a topic query that is invalid', () => {
       return request(app)
         .get('/api/articles?topic=1')
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe('Invalid Query Passed');
+        });
+    });
+    test('GET:404 should respond with appropriate error status code and error message when passed a topic that does not exist', () => {
+      return request(app)
+        .get('/api/articles?topic=banana')
         .expect(404)
         .then(({ body }) => {
           expect(body.msg).toBe('Topic does not exist');
