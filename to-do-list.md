@@ -23,7 +23,7 @@
 
 
 ### Advanced
-- [ ] GET /api/articles (sorting queries)
+- [x] GET /api/articles (sorting queries)
 - [ ] Express Routers
 - [ ] GET /api/users/:username
 - [ ] PATCH /api/comments/:comment_id
