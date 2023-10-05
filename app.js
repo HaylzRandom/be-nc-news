@@ -13,10 +13,12 @@ const { getEndpoints } = require('./controllers/api.controller');
 const {
   getArticleById,
   getArticles,
+  updateArticle,
 } = require('./controllers/articles.controller');
 const {
   addCommentForArticle,
   getCommentsForArticle,
+  deleteComment,
 } = require('./controllers/comments.controller');
 const { getUsers } = require('./controllers/users.controller');
 
@@ -31,7 +33,12 @@ app.get('/api', getEndpoints);
 app.get('/api/articles', getArticles);
 app.get('/api/articles/:article_id', getArticleById);
 app.get('/api/articles/:article_id/comments', getCommentsForArticle);
+
 app.post('/api/articles/:article_id/comments', addCommentForArticle);
+
+// /api/comments
+app.delete('/api/comments/:comment_id', deleteComment);
+app.patch('/api/articles/:article_id', updateArticle);
 
 // /api/topics
 app.get('/api/topics', getTopics);
