@@ -140,6 +140,7 @@ exports.addArticle = (article) => {
       return db.query(query, values);
     })
     .then(({ rows }) => {
+      console.log(rows[0]);
       return rows[0];
     })
     .catch((err) => {
