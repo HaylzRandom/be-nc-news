@@ -158,5 +158,19 @@
         "comment_count": 0
       }
     }
+  },
+  "POST /api/topics": {
+    "description": "adds a new topic",
+    "queries": [],
+    "exampleBody": {
+      "slug": "sports",
+      "description": "This is a description about sports"
+    },
+    "exampleResponse": {
+      "topic": {
+        "slug": "sports",
+        "description": "This is a description about sports"
+      }
+    }
   }
 }

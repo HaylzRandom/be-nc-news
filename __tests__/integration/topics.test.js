@@ -33,4 +33,88 @@ describe('/api/topics', () => {
         });
     });
   });
+  describe('POST Requests', () => {
+    test('POST:201 should return newly created topic', () => {
+      const newTopic = {
+        slug: 'topicName',
+        description: 'This is a topic description...',
+      };
+
+      return request(app)
+        .post('/api/topics')
+        .send(newTopic)
+        .expect(201)
+        .then((response) => {
+          const { topic } = response.body;
+
+          expect(topic).toBeObject();
+
+          expect(topic).toEqual({
+            slug: 'topicName',
+            description: 'This is a topic description...',
+          });
+        });
+    });
+    test('POST:201 should return newly created topic when no description is passed', () => {
+      const newTopic = {
+        slug: 'topicName',
+      };
+
+      return request(app)
+        .post('/api/topics')
+        .send(newTopic)
+        .expect(201)
+        .then((response) => {
+          const { topic } = response.body;
+
+          expect(topic).toBeObject();
+
+          expect(topic).toEqual({
+            slug: 'topicName',
+            description: null,
+          });
+        });
+    });
+    test('POST:400 should respond with appropriate status code and error message when body is missing required information', () => {
+      const newTopic = {
+        description: 'This is a topic description...',
+      };
+
+      return request(app)
+        .post('/api/topics')
+        .send(newTopic)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe('Required information is missing');
+        });
+    });
+    test('POST:400 should respond with appropriate status code and error message when body sends incorrect parameter', () => {
+      const newTopic = {
+        topic: 'topicName',
+        description: 'This is a description...',
+      };
+
+      return request(app)
+        .post('/api/topics')
+        .send(newTopic)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe('Required information is missing');
+        });
+    });
+    test('POST:409 should respond with appropriate status code and error message when sent a topic that already exists', () => {
+      const newTopic = {
+        slug: 'cats',
+        description: 'Yet another topic description...',
+      };
+
+      return request(app)
+        .post('/api/topics')
+        .send(newTopic)
+        .expect(409)
+        .then(({ body }) => {
+          expect(body.msg).toBe('Topic already exists');
+        });
+    });
+  });
 });
