@@ -483,6 +483,38 @@ describe('/api/articles/:article_id', () => {
         });
     });
   });
+  describe('DELETE Requests', () => {
+    test('DELETE:204 should respond with 204 status code when article deleted', () => {
+      return request(app).delete('/api/articles/1').expect(204);
+    });
+    test('DELETE:204 should delete corresponding comments attached to article', () => {
+      return request(app)
+        .delete('/api/articles/1')
+        .expect(204)
+        .then(() => {
+          return request(app).get('/api/articles/1/comments');
+        })
+        .then(({ body }) => {
+          expect(body.msg).toBe('article_id 1 not found');
+        });
+    });
+    test('DELETE:400 should return an appropriate status code and error message when give an invalid ID', () => {
+      return request(app)
+        .delete('/api/articles/abc')
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe('Bad Request');
+        });
+    });
+    test('DELETE:404 should response with appropriate status code and error message when article with ID supplied does not exist', () => {
+      return request(app)
+        .delete('/api/articles/99999')
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe('article_id 99999 not found');
+        });
+    });
+  });
 });
 
 describe('/api/articles/:article_id/comments', () => {
