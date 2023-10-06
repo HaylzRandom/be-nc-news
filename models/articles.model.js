@@ -92,5 +92,57 @@ exports.updateArticleById = (article_id, article) => {
     })
     .then(({ rows }) => {
       return rows[0];
+    })
+    .catch((err) => {
+      return Promise.reject(err);
+    });
+};
+
+exports.addArticle = (article) => {
+  const { author, title, body, topic, article_img_url } = article;
+
+  if (!author || !title || !body || !topic) {
+    return Promise.reject({
+      status: 400,
+      msg: 'Required information is missing',
+    });
+  }
+
+  let query = ``;
+  const values = [author, title, body, topic];
+
+  if (!article_img_url) {
+    query = `
+  INSERT INTO articles
+  (author, title, body, topic)
+  VALUES
+  ($1, $2, $3, $4)
+  RETURNING *;
+  `;
+  } else {
+    query = `
+  INSERT INTO articles
+  (author, title, body, topic, article_img_url)
+  VALUES
+  ($1, $2, $3, $4, $5)
+  RETURNING *;
+  `;
+    values.push(article_img_url);
+  }
+
+  const promises = [
+    checkExists('users', 'username', author),
+    checkExists('topics', 'slug', topic),
+  ];
+
+  return Promise.all(promises)
+    .then(() => {
+      return db.query(query, values);
+    })
+    .then(({ rows }) => {
+      return rows[0];
+    })
+    .catch((err) => {
+      return Promise.reject(err);
     });
 };

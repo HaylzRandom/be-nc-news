@@ -29,7 +29,7 @@
 - [x] Express Routers
 - [x] GET /api/users/:username
 - [x] PATCH /api/comments/:comment_id
-- [ ] POST /api/articles
+- [x] POST /api/articles
 - [ ] GET /api/articles (pagination)
 - [ ] GET /api/articles/:article_id/comments (pagination)
 - [ ] POST /api/topics
