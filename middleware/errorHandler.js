@@ -14,6 +14,7 @@ exports.handlePSQLErrors = (err, req, res, next) => {
       break;
     case '23505':
       res.status(409).send({ msg: 'Topic already exists' });
+      break;
     default:
       next(err);
       break;
