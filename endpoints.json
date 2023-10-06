@@ -172,5 +172,9 @@
         "description": "This is a description about sports"
       }
     }
+  },
+  "DELETE /api/articles/:article_id": {
+    "description": "deletes an article and all relevant comments attached to article",
+    "queries": []
   }
 }

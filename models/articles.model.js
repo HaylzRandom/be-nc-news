@@ -171,3 +171,11 @@ exports.addArticle = (article) => {
       return Promise.reject(err);
     });
 };
+
+exports.deleteArticleById = (article_id) => {
+  return checkExists('articles', 'article_id', article_id).then(() => {
+    return db.query('DELETE FROM articles WHERE article_id = $1 RETURNING *;', [
+      article_id,
+    ]);
+  });
+};

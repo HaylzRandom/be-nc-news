@@ -33,4 +33,4 @@
 - [x] GET /api/articles (pagination)
 - [x] GET /api/articles/:article_id/comments (pagination)
 - [x] POST /api/topics
-- [ ] DELETE /api/articles/:article_id
+- [x] DELETE /api/articles/:article_id
