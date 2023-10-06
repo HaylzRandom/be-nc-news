@@ -154,7 +154,8 @@
         "topic": "cats",
         "created_at": "2018-05-30T15:59:13.341Z",
         "votes": 0,
-        "article_img_url": "https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700"
+        "article_img_url": "https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700",
+        "comment_count": 0
       }
     }
   }
