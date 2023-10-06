@@ -7,11 +7,14 @@ const {
 const { getAllCommentsForArticle } = require('../models/comments.model');
 
 exports.getArticles = (req, res, next) => {
-  const { sort_by, topic, order } = req.query;
+  const { sort_by, topic, order, limit, p } = req.query;
 
-  getAllArticles(sort_by, topic, order)
-    .then((articles) => {
-      res.status(200).send({ articles });
+  getAllArticles(sort_by, topic, order, limit, p)
+    .then((response) => {
+      const articles = response[0];
+      const count = response[1].rows[0];
+
+      res.status(200).send({ articles, count });
     })
     .catch(next);
 };

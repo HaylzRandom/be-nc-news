@@ -17,7 +17,7 @@ describe('/api/articles', () => {
           .then((response) => {
             const { articles } = response.body;
 
-            expect(articles).toHaveLength(13);
+            expect(articles).toHaveLength(10); // With pagination included this is now a length of 10 rather than 13
 
             articles.forEach((article) => {
               expect(typeof article.article_id).toBe('number');
@@ -38,6 +38,59 @@ describe('/api/articles', () => {
           .expect(404)
           .then(({ body }) => {
             expect(body.msg).toBe('Path Not Found');
+          });
+      });
+    });
+
+    describe('Pagination Queries', () => {
+      test('GET:200 should send an array of articles pagninated and limited by 10 as a default', () => {
+        return request(app)
+          .get('/api/articles')
+          .expect(200)
+          .then((response) => {
+            const { articles, count } = response.body;
+            expect(articles).toHaveLength(10);
+            expect(count.total_count).toBe(13);
+          });
+      });
+      test('GET:200 should send an array of articles paginated and limited by query', () => {
+        return request(app)
+          .get('/api/articles?limit=5')
+          .expect(200)
+          .then((response) => {
+            const { articles, count } = response.body;
+            expect(articles).toHaveLength(5);
+            expect(count.total_count).toBe(13);
+          });
+      });
+      test('GET:200 should send an array of articles that are paginated and offset', () => {
+        return request(app)
+          .get('/api/articles?p=2')
+          .expect(200)
+          .then((response) => {
+            const { articles } = response.body;
+
+            const firstArticle = articles[0];
+
+            expect(articles).toHaveLength(3);
+            expect(firstArticle.article_id).not.toBe(3);
+            expect(firstArticle.article_id).toBe(8);
+          });
+      });
+      test('GET:400 should respond with appropriate error status code and error message when passed a limit query that is invalid', () => {
+        return request(app)
+          .get('/api/articles?limit=b')
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe('Invalid Query Passed');
+          });
+      });
+      test('GET:400 should respond with appropriate error status code and error message when passed a page query that is invalid', () => {
+        return request(app)
+          .get('/api/articles?p=page')
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe('Invalid Query Passed');
           });
       });
     });
@@ -128,7 +181,7 @@ describe('/api/articles', () => {
           .then((response) => {
             const { articles } = response.body;
 
-            expect(articles).toHaveLength(12);
+            expect(articles).toHaveLength(10);
             expect(articles).toBeSortedBy('created_at', {
               descending: true,
             });
@@ -140,7 +193,7 @@ describe('/api/articles', () => {
           .then((response) => {
             const { articles } = response.body;
 
-            expect(articles).toHaveLength(13);
+            expect(articles).toHaveLength(10);
             expect(articles).toBeSortedBy('created_at', {
               descending: true,
             });

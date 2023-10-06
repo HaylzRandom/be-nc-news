@@ -30,7 +30,7 @@
 - [x] GET /api/users/:username
 - [x] PATCH /api/comments/:comment_id
 - [x] POST /api/articles
-- [ ] GET /api/articles (pagination)
+- [x] GET /api/articles (pagination)
 - [ ] GET /api/articles/:article_id/comments (pagination)
 - [ ] POST /api/topics
 - [ ] DELETE /api/articles/:article_id
