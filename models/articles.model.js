@@ -1,8 +1,15 @@
 const db = require('../db/connection');
 const { checkExists } = require('../db/seeds/utils');
 
-exports.getAllArticles = (sort_by = 'created_at', topic, order = 'DESC') => {
+exports.getAllArticles = (
+  sort_by = 'created_at',
+  topic,
+  order = 'DESC',
+  limit = 10,
+  page = 1
+) => {
   const topicRegex = /^\d+$/;
+  const numberRegex = /\d+/;
 
   const validSortBy = {
     created_at: 'created_at',
@@ -21,12 +28,14 @@ exports.getAllArticles = (sort_by = 'created_at', topic, order = 'DESC') => {
   if (
     !(sort_by in validSortBy) ||
     !(order in validSortOrder) ||
-    topicRegex.test(topic)
+    topicRegex.test(topic) ||
+    !numberRegex.test(limit) ||
+    !numberRegex.test(page)
   ) {
     return Promise.reject({ status: 400, msg: 'Invalid Query Passed' });
   }
 
-  let query = `
+  let selectQuery = `
   SELECT a.article_id, a.author, a.title, a.topic, a.created_at, a.votes, a.article_img_url, COUNT(c.comment_id)::int as comment_count
   FROM articles a
   LEFT JOIN comments c
@@ -36,18 +45,31 @@ exports.getAllArticles = (sort_by = 'created_at', topic, order = 'DESC') => {
   const values = [];
 
   if (topic) {
-    query += `WHERE topic = $1`;
+    selectQuery += `WHERE topic = $1`;
     values.push(topic);
   }
 
-  query += ` GROUP BY a.article_id
-  ORDER BY a.${validSortBy[sort_by]} ${validSortOrder[order]};`;
+  selectQuery += `GROUP BY a.article_id
+  ORDER BY a.${validSortBy[sort_by]} ${validSortOrder[order]}
+  LIMIT ${limit}
+  OFFSET ${(page - 1) * limit};`;
 
-  return db.query(query, values).then(({ rows }) => {
-    return rows.length === 0
-      ? Promise.reject({ status: 404, msg: 'Topic does not exist' })
-      : rows;
-  });
+  const getArticles = db.query(selectQuery, values);
+  const countArticles = db.query(
+    'SELECT COUNT(article_id)::INT as total_count FROM articles;'
+  );
+
+  const promises = [getArticles, countArticles];
+
+  return Promise.all(promises)
+    .then(([articles, count]) => {
+      return articles.rows.length === 0
+        ? Promise.reject({ status: 404, msg: 'Topic does not exist' })
+        : Promise.resolve([articles.rows, count]);
+    })
+    .catch((err) => {
+      return Promise.reject(err);
+    });
 };
 
 exports.selectArticleById = (article_id) => {
