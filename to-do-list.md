@@ -1,6 +1,7 @@
 # To Do List for NC News API Backend
 
 ### Core
+
 - [x] Project Setup
 - [x] GET /api/topics
 - [x] GET /api
@@ -23,9 +24,10 @@
 
 
 ### Advanced
+
 - [x] GET /api/articles (sorting queries)
 - [x] Express Routers
-- [ ] GET /api/users/:username
+- [x] GET /api/users/:username
 - [x] PATCH /api/comments/:comment_id
 - [ ] POST /api/articles
 - [ ] GET /api/articles (pagination)
