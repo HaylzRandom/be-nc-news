@@ -54,7 +54,7 @@ exports.selectArticleById = (article_id) => {
   const query = `
   SELECT a.*, COUNT(c.comment_id)::INT as comment_count 
   FROM articles a
-  JOIN comments c
+  LEFT JOIN comments c
   ON a.article_id = c.article_id
   WHERE a.article_id = $1
   GROUP BY a.article_id;
@@ -140,8 +140,10 @@ exports.addArticle = (article) => {
       return db.query(query, values);
     })
     .then(({ rows }) => {
-      console.log(rows[0]);
-      return rows[0];
+      return this.selectArticleById(rows[0].article_id);
+    })
+    .then((article) => {
+      return article;
     })
     .catch((err) => {
       return Promise.reject(err);
