@@ -31,6 +31,6 @@
 - [x] PATCH /api/comments/:comment_id
 - [x] POST /api/articles
 - [x] GET /api/articles (pagination)
-- [ ] GET /api/articles/:article_id/comments (pagination)
+- [x] GET /api/articles/:article_id/comments (pagination)
 - [ ] POST /api/topics
 - [ ] DELETE /api/articles/:article_id

@@ -7,8 +7,9 @@ const {
 
 exports.getCommentsForArticle = (req, res, next) => {
   const { article_id } = req.params;
+  const { limit, p } = req.query;
 
-  getAllCommentsForArticle(article_id)
+  getAllCommentsForArticle(article_id, limit, p)
     .then((comments) => {
       res.status(200).send({ comments });
     })
