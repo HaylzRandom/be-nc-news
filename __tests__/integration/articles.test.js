@@ -249,7 +249,7 @@ describe('/api/articles', () => {
           });
         });
     });
-    test('POST:201 should return newly created artile object without default article_img_url', () => {
+    test('POST:201 should return newly created article object without default article_img_url', () => {
       const newArticle = {
         author: 'lurker',
         title: 'Test article...',

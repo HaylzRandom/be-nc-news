@@ -12,6 +12,9 @@ exports.handlePSQLErrors = (err, req, res, next) => {
     case '23502':
       res.status(400).send({ msg: 'Bad Request' });
       break;
+    case '23505':
+      res.status(409).send({ msg: 'Topic already exists' });
+      break;
     default:
       next(err);
       break;
