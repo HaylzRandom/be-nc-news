@@ -1,24 +1,33 @@
 const db = require('../db/connection');
 const { checkExists } = require('../db/seeds/utils');
 
-exports.getAllCommentsForArticle = (article_id) => {
+exports.getAllCommentsForArticle = (article_id, limit = 10, page = 1) => {
+  const numberRegex = /\d+/;
+
+  if (!numberRegex.test(limit) || !numberRegex.test(page)) {
+    return Promise.reject({ status: 400, msg: 'Invalid Query Passed' });
+  }
+
+  const offset = (page - 1) * limit;
   const query = `
     SELECT * FROM comments 
     WHERE article_id = $1
-    ORDER BY created_at DESC;`;
+    ORDER BY created_at DESC
+    LIMIT $2
+    OFFSET $3;`;
 
-  return db.query(query, [article_id]).then(({ rows }) => {
-    if (rows.length === 0) {
-      return checkExists('articles', 'article_id', article_id).then(() => {
-        return Promise.reject({
-          status: 200,
-          msg: 'No comments found for article',
-        });
-      });
-    } else {
-      return rows;
-    }
-  });
+  return checkExists('articles', 'article_id', article_id)
+    .then(() => {
+      return db.query(query, [article_id, limit, offset]);
+    })
+    .then(({ rows }) => {
+      return rows.length === 0
+        ? Promise.reject({
+            status: 200,
+            msg: 'No comments found for article',
+          })
+        : rows;
+    });
 };
 
 exports.addComment = (article_id, comment) => {

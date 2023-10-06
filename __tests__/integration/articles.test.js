@@ -487,66 +487,119 @@ describe('/api/articles/:article_id', () => {
 
 describe('/api/articles/:article_id/comments', () => {
   describe('GET Requests', () => {
-    test('GET:200 should return an array of comments for a given article', () => {
-      return request(app)
-        .get('/api/articles/1/comments')
-        .expect(200)
-        .then((response) => {
-          const { comments } = response.body;
+    describe('Basic Queries', () => {
+      test('GET:200 should return an array of comments for a given article', () => {
+        return request(app)
+          .get('/api/articles/1/comments')
+          .expect(200)
+          .then((response) => {
+            const { comments } = response.body;
 
-          expect(comments).toHaveLength(11);
-          expect(comments).toBeSortedBy('created_at', {
-            descending: true,
+            expect(comments).toHaveLength(10);
+            expect(comments).toBeSortedBy('created_at', {
+              descending: true,
+            });
+            expect(comments).toEqual(
+              expect.arrayContaining([
+                expect.objectContaining({
+                  comment_id: expect.any(Number),
+                  votes: expect.any(Number),
+                  created_at: expect.any(String),
+                  author: expect.any(String),
+                  body: expect.any(String),
+                  article_id: expect.any(Number),
+                }),
+              ])
+            );
           });
-          expect(comments).toEqual(
-            expect.arrayContaining([
-              expect.objectContaining({
-                comment_id: expect.any(Number),
-                votes: expect.any(Number),
-                created_at: expect.any(String),
-                author: expect.any(String),
-                body: expect.any(String),
-                article_id: expect.any(Number),
-              }),
-            ])
-          );
-        });
-    });
-    test('GET:200 should return array of comments sorted by date in descending order', () => {
-      return request(app)
-        .get('/api/articles/1/comments')
-        .expect(200)
-        .then((response) => {
-          const { comments } = response.body;
+      });
+      test('GET:200 should return array of comments sorted by date in descending order', () => {
+        return request(app)
+          .get('/api/articles/1/comments')
+          .expect(200)
+          .then((response) => {
+            const { comments } = response.body;
 
-          expect(comments).toBeSortedBy('created_at', {
-            descending: true,
+            expect(comments).toBeSortedBy('created_at', {
+              descending: true,
+            });
           });
-        });
+      });
+      test('GET:200 should respond with appropriate message and status code when article exists but has no comments', () => {
+        return request(app)
+          .get('/api/articles/12/comments')
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.msg).toBe('No comments found for article');
+          });
+      });
+      test('GET:404 should respond with appropriate status code and error message when article with the ID supplied does not exist', () => {
+        return request(app)
+          .get('/api/articles/9999/comments')
+          .expect(404)
+          .then(({ body }) => {
+            expect(body.msg).toBe('article_id 9999 not found');
+          });
+      });
+      test('GET:400 should return an appropriate status code and error message when given an invalid ID that is not a number', () => {
+        return request(app)
+          .get('/api/articles/a/comments')
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe('Bad Request');
+          });
+      });
     });
-    test('GET:200 should respond with appropriate message and status code when article exists but has no comments', () => {
-      return request(app)
-        .get('/api/articles/12/comments')
-        .expect(200)
-        .then(({ body }) => {
-          expect(body.msg).toBe('No comments found for article');
-        });
-    });
-    test('GET:404 should respond with appropriate status code and error message when article with the ID supplied does not exist', () => {
-      return request(app)
-        .get('/api/articles/9999/comments')
-        .expect(404)
-        .then(({ body }) => {
-          expect(body.msg).toBe('article_id 9999 not found');
-        });
-    });
-    test('GET:400 should return an appropriate status code and error message when given an invalid ID that is not a number', () => {
-      return request(app)
-        .get('/api/articles/a/comments')
-        .expect(400)
-        .then(({ body }) => {
-          expect(body.msg).toBe('Bad Request');
-        });
+
+    describe('Pagination Queries', () => {
+      test('GET:200 should send an array of comments pagninated and limited by 10 as a default', () => {
+        return request(app)
+          .get('/api/articles/1/comments')
+          .expect(200)
+          .then((response) => {
+            const { comments } = response.body;
+            expect(comments).toHaveLength(10);
+          });
+      });
+      test('GET:200 should send an array of articles paginated and limited by query', () => {
+        return request(app)
+          .get('/api/articles/1/comments?limit=5')
+          .expect(200)
+          .then((response) => {
+            const { comments } = response.body;
+            expect(comments).toHaveLength(5);
+          });
+      });
+      test('GET:200 should send an array of articles that are paginated and offset', () => {
+        return request(app)
+          .get('/api/articles/1/comments?p=2')
+          .expect(200)
+          .then((response) => {
+            const { comments } = response.body;
+
+            const firstComment = comments[0];
+
+            expect(comments).toHaveLength(1);
+            expect(firstComment.comment_id).not.toBe(5);
+            expect(firstComment.comment_id).toBe(9);
+          });
+      });
+      test('GET:400 should respond with appropriate error status code and error message when passed a limit query that is invalid', () => {
+        return request(app)
+          .get('/api/articles/1/comments?limit=b')
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe('Invalid Query Passed');
+          });
+      });
+      test('GET:400 should respond with appropriate error status code and error message when passed a page query that is invalid', () => {
+        return request(app)
+          .get('/api/articles/1/comments?p=page')
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe('Invalid Query Passed');
+          });
+      });
     });
   });
   describe('POST Requests', () => {

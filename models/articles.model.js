@@ -45,7 +45,7 @@ exports.getAllArticles = (
   const values = [];
 
   if (topic) {
-    selectQuery += `WHERE topic = $1`;
+    selectQuery += `WHERE a.topic = $1`;
     values.push(topic);
   }
 
