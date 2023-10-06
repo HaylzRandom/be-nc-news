@@ -165,6 +165,120 @@ describe('/api/articles', () => {
       });
     });
   });
+  describe('POST Requests', () => {
+    test('POST:201 should return newly created article object', () => {
+      const newArticle = {
+        author: 'lurker',
+        title: 'Test article...',
+        body: 'Test Article body...',
+        topic: 'cats',
+      };
+
+      return request(app)
+        .post('/api/articles')
+        .send(newArticle)
+        .expect(201)
+        .then((response) => {
+          const { article } = response.body;
+
+          expect(article).toBeObject();
+
+          expect.objectContaining({
+            article_id: expect.any(Number),
+            title: expect.any(String),
+            topic: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+          });
+        });
+    });
+    test('POST:201 should return newly created artile object without default article_img_url', () => {
+      const newArticle = {
+        author: 'lurker',
+        title: 'Test article...',
+        body: 'Test Article body...',
+        topic: 'cats',
+        article_img_url: 'https://www.google.com/catpic',
+      };
+
+      return request(app)
+        .post('/api/articles')
+        .send(newArticle)
+        .expect(201)
+        .then((response) => {
+          const { article } = response.body;
+
+          expect(article.article_img_url).not.toBe(
+            'https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700'
+          );
+          expect(article.article_img_url).toBe('https://www.google.com/catpic');
+        });
+    });
+    test('POST:400 should respond with appropriate status code and error message when body is missing required information', () => {
+      const newArticle = {
+        author: 'lurker',
+        title: 'Test article...',
+        body: 'Test Article body...',
+      };
+
+      return request(app)
+        .post('/api/articles')
+        .send(newArticle)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe('Required information is missing');
+        });
+    });
+    test('POST:400 should respond with appropriate status code and error message when body sends incorrect parameter', () => {
+      const newArticle = {
+        username: 'lurker',
+        title: 'Test article...',
+        body: 'Test Article body...',
+        topic: 'cats',
+      };
+
+      return request(app)
+        .post('/api/articles')
+        .send(newArticle)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe('Required information is missing');
+        });
+    });
+    test('POST:400 should respond with appropriate status code and error message when author does not exist', () => {
+      const newArticle = {
+        author: 'unknownUser',
+        title: 'Test article...',
+        body: 'Test Article body...',
+        topic: 'cats',
+      };
+
+      return request(app)
+        .post('/api/articles')
+        .send(newArticle)
+        .then(({ body }) => {
+          expect(body.msg).toBe('username unknownUser not found');
+        });
+    });
+    test('POST:400 should respond with appropriate status code and error message when topic does not exist', () => {
+      const newArticle = {
+        author: 'lurker',
+        title: 'Test article...',
+        body: 'Test Article body...',
+        topic: 'notATopic',
+      };
+
+      return request(app)
+        .post('/api/articles')
+        .send(newArticle)
+        .then(({ body }) => {
+          expect(body.msg).toBe('slug notATopic not found');
+        });
+    });
+  });
 });
 
 describe('/api/articles/:article_id', () => {
@@ -318,13 +432,6 @@ describe('/api/articles/:article_id', () => {
 });
 
 describe('/api/articles/:article_id/comments', () => {
-  /* 
-      - GET
-      - respond with 200 status
-      - respond with 200 if article is found but no comments exist
-      - respond with 404 when no article found with article_id
-      - respond with 400 when passing an invalid ID
-    */
   describe('GET Requests', () => {
     test('GET:200 should return an array of comments for a given article', () => {
       return request(app)
@@ -388,14 +495,6 @@ describe('/api/articles/:article_id/comments', () => {
         });
     });
   });
-  /* 
-      - POST
-      - respond with 201 with new comment created
-      - respond with 400 when passing an invalid ID
-      - respond with 400 when not passing all required information
-      - respond with 404 when no article found with article_id 
-      - respond with 404 when user does not exist in users 
-    */
   describe('POST Requests', () => {
     test('POST:201 should return newly created comment as an object', () => {
       const newComment = {

@@ -2,6 +2,7 @@ const {
   selectArticleById,
   getAllArticles,
   updateArticleById,
+  addArticle,
 } = require('../models/articles.model');
 const { getAllCommentsForArticle } = require('../models/comments.model');
 
@@ -32,6 +33,15 @@ exports.updateArticle = (req, res, next) => {
   updateArticleById(article_id, update)
     .then((article) => {
       res.status(200).send({ article });
+    })
+    .catch(next);
+};
+
+exports.createArticle = (req, res, next) => {
+  const newArticle = req.body;
+  addArticle(newArticle)
+    .then((article) => {
+      res.status(201).send({ article });
     })
     .catch(next);
 };
