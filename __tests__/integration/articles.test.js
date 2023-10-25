@@ -573,7 +573,9 @@ describe('/api/articles/:article_id/comments', () => {
           .get('/api/articles/12/comments')
           .expect(200)
           .then(({ body }) => {
-            expect(body.msg).toBe('No comments found for article');
+            const { comments } = body;
+            expect(comments).toHaveLength(0);
+            expect(comments).toEqual([]);
           });
       });
       test('GET:404 should respond with appropriate status code and error message when article with the ID supplied does not exist', () => {
