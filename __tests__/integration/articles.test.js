@@ -164,6 +164,17 @@ describe('/api/articles', () => {
             });
           });
       });
+      test('GET:200 should send array sorted by number of votes an article has and order by query passed in', () => {
+        return request(app)
+          .get('/api/articles?sort_by=votes&order=asc')
+          .then((response) => {
+            const { articles } = response.body;
+
+            expect(articles).toBeSortedBy('votes', {
+              ascending: true,
+            });
+          });
+      });
       test('GET:400 should respond with appropriate error status code and error message when passed an sort by query that is invalid', () => {
         return request(app)
           .get('/api/articles?sort_by=cheese')

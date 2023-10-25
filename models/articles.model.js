@@ -16,6 +16,7 @@ exports.getAllArticles = (
     article_id: 'article_id',
     author: 'author',
     topic: 'topic',
+    votes: 'votes',
   };
 
   const validSortOrder = {
