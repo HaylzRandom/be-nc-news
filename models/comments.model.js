@@ -21,12 +21,7 @@ exports.getAllCommentsForArticle = (article_id, limit = 10, page = 1) => {
       return db.query(query, [article_id, limit, offset]);
     })
     .then(({ rows }) => {
-      return rows.length === 0
-        ? Promise.reject({
-            status: 200,
-            msg: 'No comments found for article',
-          })
-        : rows;
+      return rows.length === 0 ? [] : rows;
     });
 };
 
