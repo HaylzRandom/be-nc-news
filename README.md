@@ -54,7 +54,10 @@ To run all the unit and tests run the following script in the terminal:
 
 ### Roadmap
 
-- [ ] Implement ability to create new users
-- [ ] Implement ability to update existing user
+- [ ] Ability to create new users
+- [ ] Ability to update existing user
 - [ ] Implement more details to be associated with user
 - [ ] Implement function to get all the user's personal comments, articles and votes they have voted
+- [ ] Add roles to users
+- [ ] Attach votes to users (limiting to one per article/comment)
+- [ ] Ability to delete an article (own article/admin user)
