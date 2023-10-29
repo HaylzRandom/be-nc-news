@@ -13,12 +13,12 @@ A backend API for a Northcoders News app. Allows access to multiple types of app
 
 [NorthCoders News API](https://nc-news-api-ga04.onrender.com/api)
 
-### Tech Stack / Requirements
+### Tech Stack
 
-- Node.js - v20.5.1
-- PostGres - v14.9
-- Express.js
-- Jest
+![Node.js](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white)
+![PostGres](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
+![Express.js](https://img.shields.io/badge/express.js-000000?style=for-the-badge&logo=express&logoColor=white)
+![Jest](https://img.shields.io/badge/Jest-C21325?style=for-the-badge&logo=Jest&logoColor=white)
   
 ### To Run Locally
 
@@ -51,3 +51,10 @@ Once these files have been created run the following scripts in the terminal:
 To run all the unit and tests run the following script in the terminal:
 
 `npm run test`
+
+### Roadmap
+
+- [ ] Implement ability to create new users
+- [ ] Implement ability to update existing user
+- [ ] Implement more details to be associated with user
+- [ ] Implement function to get all the user's personal comments, articles and votes they have voted
