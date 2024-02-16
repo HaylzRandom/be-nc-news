@@ -24,7 +24,7 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
         slug VARCHAR PRIMARY KEY,
         description VARCHAR
       );`);
-
+        // TODO - Add email (unique), password
       const usersTablePromise = db.query(`
       CREATE TABLE users (
         username VARCHAR PRIMARY KEY,
